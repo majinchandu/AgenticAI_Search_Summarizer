@@ -1,53 +1,110 @@
 import streamlit as st
+from search_tool import search_web
+from pdf_writer import save_summary_to_pdf
+from memory_manager import save_to_memory, print_memory
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 
-from search_tool import search_web
-from pdf_writer import save_summary_to_pdf
-from memory_manager import save_to_memory, load_memory
-
-# Load API key
+# Load API Key
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# UI Header
-st.set_page_config(page_title="Knowledge Ranger", layout="centered")
-st.title("🧠 Knowledge Ranger – Web Agentic Summarizer")
+# Tools
+def search_as_text(query):
+    results = search_web(query)
+    return "\n".join([f"- {r}" for r in results])
 
-# User input
-topic = st.text_input("Enter a topic to summarize")
+TOOLS = {
+    "search": search_as_text,
+    "summarize": lambda text: model.generate_content(f"Summarize this:\n\n{text}").text,
+    "pdf": save_summary_to_pdf,
+    "memory": print_memory,
+}
 
-if st.button("Generate Summary"):
-    if topic.strip() == "":
-        st.warning("Please enter a topic.")
+def plan_tools(topic):
+    prompt = f"""
+You are an intelligent AI agent with access to these tools:
+- search: to get web data
+- summarize: to condense text
+- pdf: to save output
+- memory: to view past topics
+
+User asked: "{topic}"
+
+Decide which tools to use in order. Output only a Python list like:
+['search', 'summarize', 'pdf']
+"""
+    result = model.generate_content(prompt)
+    try:
+        tool_plan = eval(result.text.strip())
+        if isinstance(tool_plan, list):
+            return tool_plan
+    except:
+        pass
+    return ["search", "summarize", "pdf"]
+
+# Streamlit App
+st.title("🧠 Feedback Loop Agent")
+st.markdown("Let the AI plan and execute a workflow using tools: `search`, `summarize`, `pdf`, `memory`.")
+
+topic = st.text_input("Enter a topic:", placeholder="e.g. Future of Renewable Energy")
+
+if st.button("Start Agent"):
+    if not topic:
+        st.warning("Please enter a topic first.")
     else:
-        with st.spinner("🔍 Searching the web..."):
-            results = search_web(topic)
-            combined = "\n".join(results)
+        st.markdown(f"### 🎯 Topic: **{topic}**")
+        steps = []
+        current_data = topic
+        done = False
+        log = ""
 
-        with st.spinner("🧠 Summarizing using Gemini..."):
-            prompt = f"""You are a research assistant. Summarize the following web results into a deep, structured report:\n\nTopic: {topic}\n\nWeb results:\n{combined}"""
-            response = model.generate_content(prompt)
-            summary = response.text
+        while not done:
+            planning_prompt = f"""
+You are an intelligent AI agent. Your current goal is:
 
-        st.subheader("📘 Gemini Summary:")
-        st.write(summary)
+"{topic}"
 
-        # Save and display PDF
-        save_summary_to_pdf(summary, topic)
-        st.success("✅ PDF generated and saved as `gemini_summary.pdf`")
+So far, you have these observations:
+{steps}
 
-        with open("gemini_summary.pdf", "rb") as f:
-            st.download_button("📄 Download PDF", f, file_name="summary_report.pdf")
+Available tools: search, summarize, pdf, memory, done
 
-        # Save to memory
-        save_to_memory(topic, summary)
+Based on current state, what should be the next step?
+Respond with only the tool name you want to run next.
+If the task is complete, respond with: done
+"""
+            plan = model.generate_content(planning_prompt).text.strip().lower()
+            plan = plan.replace("`", "").replace("'", "").replace('"', '').strip()
 
-# Memory display
-st.divider()
-st.subheader("🗂️ Past Summaries")
-memory = load_memory()
-for entry in reversed(memory[-5:]):  # Show last 5 entries
-    st.markdown(f"**{entry['timestamp']}** – {entry['topic']}")
+            if plan == "done":
+                st.success("✅ Task completed.")
+                done = True
+                break
+
+            if plan not in TOOLS:
+                st.error(f"⚠️ Invalid Tool: `{plan}`")
+                break
+
+            st.write(f"🧠 **Thought:** Use `{plan}`")
+            st.write(f"🔧 **Action:** Running `{plan}`...")
+
+            tool = TOOLS[plan]
+            if plan == "pdf":
+                tool(current_data, topic)
+                observation = f"✅ PDF saved for topic: {topic}"
+            elif plan == "memory":
+                observation = tool("")
+            else:
+                current_data = tool(current_data)
+                observation = current_data[:500] + "..." if isinstance(current_data, str) else "[⚠️] Non-text output"
+
+            steps.append(f"Tool used: {plan}\nObservation: {observation}")
+            with st.expander(f"📈 Step {len(steps)}: `{plan}`"):
+                st.write(observation)
+
+        if "summarize" in [s.lower() for s in steps[-2:]]:
+            save_to_memory(topic, current_data)
+            st.info("🧠 Summary saved to memory.")
