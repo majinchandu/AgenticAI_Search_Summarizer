@@ -18,7 +18,7 @@ def search_web(query):
     data = response.json()
 
     if "organic_results" not in data:
-        return ["[❌] No results found."]
+        return ["No results found."]
 
     results = data["organic_results"]
     summaries = [result["snippet"] for result in results if "snippet" in result]

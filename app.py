@@ -51,20 +51,20 @@ If the task is complete, respond with: done
         plan = plan.replace("`", "").replace("'", "").replace('"', '').strip()
 
         if plan == "done":
-            st.success("✅ Task completed.")
+            st.success(" Task completed.")
             done = True
             continue
 
         if plan not in TOOLS:
-            st.error(f"⚠️ Invalid Tool: {plan}")
+            st.error(f" Invalid Tool: {plan}")
             break
 
-        st.info(f"🧠 Thought: I should now use the `{plan}` tool.")
+        st.info(f" Thought: I should now use the `{plan}` tool.")
 
         tool = TOOLS[plan]
         if plan == "pdf":
             tool(current_data, topic)
-            observation = f"📄 PDF saved for topic: {topic}"
+            observation = f" PDF saved for topic: {topic}"
         elif plan == "memory":
             observation = tool("")
         else:
@@ -78,16 +78,16 @@ If the task is complete, respond with: done
 
     if "summarize" in [s.lower() for s in steps[-2:]]:
         save_to_memory(topic, current_data)
-        st.success("🧠 Memory updated with final summary.")
+        st.success(" Memory updated with final summary.")
 
     if final_summary:
-        st.subheader("📘 Final Summary")
+        st.subheader(" Final Summary")
         st.write(final_summary)
 
 # Streamlit UI
 st.set_page_config(page_title="Agentic AI Assistant", layout="centered")
-st.title("🤖 Agentic AI: Knowledge Assistant")
+st.title(" Agentic AI: Knowledge Assistant")
 
-query = st.text_input("🧠 Topic batao jiska deep kaam chahiye:", "")
-if st.button("🚀 Run Agent") and query:
+query = st.text_input(" Topic batao jiska deep kaam chahiye:", "")
+if st.button(" Run Agent") and query:
     feedback_loop_agent_streamlit(query)

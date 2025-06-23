@@ -10,7 +10,7 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# 🧠 Fix: Format list results from search into clean string
+#  Fix: Format list results from search into clean string
 def search_as_text(query):
     results = search_web(query)
     return "\n".join([f"- {r}" for r in results])
@@ -46,7 +46,7 @@ Decide which tools to use in order. Output only a Python list like:
     return ["search", "summarize", "pdf"]
 
 def feedback_loop_agent(topic):
-    print(f"\n🧠 [Agent Goal] \"{topic}\"\n")
+    print(f"\n[Agent Goal] \"{topic}\"\n")
 
     current_data = topic
     steps = []
@@ -71,16 +71,16 @@ If the task is complete, respond with: done
         plan = plan.replace("`", "").replace("'", "").replace('"', '').strip()
 
         if plan == "done":
-            print("✅ [Agent Finished] Task completed.")
+            print(" [Agent Finished] Task completed.")
             done = True
             continue
 
         if plan not in TOOLS:
-            print(f"⚠️ [Invalid Tool]: {plan}")
+            print(f" [Invalid Tool]: {plan}")
             break
 
-        print(f"🧠 [Thought] I should now use the `{plan}` tool.")
-        print(f"🔧 [Action] Running `{plan}`...")
+        print(f" [Thought] I should now use the `{plan}` tool.")
+        print(f" [Action] Running `{plan}`...")
 
         tool = TOOLS[plan]
         if plan == "pdf":
@@ -93,14 +93,14 @@ If the task is complete, respond with: done
             observation = current_data[:500] + "..." if isinstance(current_data, str) else "[⚠️] Non-text output"
 
         steps.append(f"Tool used: {plan}\nObservation: {observation}")
-        print(f"📈 [Observation] {observation}")
+        print(f" [Observation] {observation}")
         print("-" * 60)
 
     # Save to memory if a summary was generated
     if "summarize" in [s.lower() for s in steps[-2:]]:
         save_to_memory(topic, current_data)
-        print("🧠 [Memory] Saved summary.")
+        print(" [Memory] Saved summary.")
 
 if __name__ == "__main__":
-    topic = input("🧠 Topic batao jiska deep kaam chahiye: ")
+    topic = input(" Topic batao jiska deep kaam chahiye: ")
     feedback_loop_agent(topic)
