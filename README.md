@@ -1,110 +1,162 @@
-Agentic AI Assistant
-Overview
-Agentic AI Assistant is a Python-based application designed to perform in-depth research on user-specified topics. It leverages an intelligent AI agent powered by Google's Gemini model to orchestrate a workflow using tools for web searching, text summarization, PDF generation, and memory management. The project offers two interfaces: a command-line interface (CLI) via main.py and a web-based interface built with Streamlit via app.py.
-The AI agent dynamically decides which tools to use based on the task's progress, ensuring a feedback loop that refines the output until the task is complete. The system saves summaries to memory and generates PDF reports for easy sharing.
-Features
+# Agentic AI Assistant
 
-Web Search: Fetches relevant information from the web using the SerpAPI.
-Text Summarization: Condenses information into concise summaries using the Gemini 1.5 Flash model.
-PDF Generation: Saves summaries as formatted PDF reports.
-Memory Management: Stores topic summaries with timestamps for historical reference.
-Dynamic Tool Planning: The AI agent decides the next steps using a feedback loop.
-Dual Interfaces:
-CLI for terminal-based interaction (main.py).
-Streamlit UI for a user-friendly web experience (app.py).
+## 🧠 Overview
 
+**Agentic AI Assistant** is a Python-based application designed to perform in-depth research on user-specified topics.
+It leverages an intelligent AI agent powered by Google's Gemini model to orchestrate a workflow using tools for:
 
+* Web searching
+* Text summarization
+* PDF generation
+* Memory management
 
-Project Structure
-├── app.py                # Streamlit web interface
-├── main.py               # Command-line interface
-├── memory_manager.py     # Handles memory storage and retrieval
-├── pdf_writer.py         # Generates PDF reports
-├── search_tool.py        # Performs web searches using SerpAPI
-├── memory.json           # Stores historical summaries (generated at runtime)
-├── .env                  # Environment variables (not included in repo)
-└── README.md             # Project documentation
+The project offers two interfaces:
 
-Installation
-Prerequisites
+* A command-line interface (CLI) via `main.py`
+* A web-based interface built with Streamlit via `app.py`
 
-Python 3.8 or higher
-A Google Gemini API key (for summarization)
-A SerpAPI key (for web search)
+The AI agent dynamically decides which tools to use based on task progress, ensuring a **feedback loop** that refines output until the task is complete.
 
-Steps
+---
 
-Clone the Repository
+## Features
+
+* **Web Search**: Fetches relevant information using [SerpAPI](https://serpapi.com).
+* **Text Summarization**: Condenses content via Gemini 1.5 Flash.
+* **PDF Generation**: Saves outputs as formatted PDF reports.
+* **Memory Management**: Stores topic summaries with timestamps in `memory.json`.
+* **Dynamic Tool Planning**: Agent decides next steps based on context.
+* **Dual Interfaces**:
+
+  * CLI with `main.py`
+  * Streamlit UI with `app.py`
+
+---
+
+## Project Structure
+
+```
+🔹 app.py                # Streamlit web interface
+🔹 main.py               # Command-line interface
+🔹 memory_manager.py     # Handles memory storage and retrieval
+🔹 pdf_writer.py         # Generates PDF reports
+🔹 search_tool.py        # Performs web searches using SerpAPI
+🔹 memory.json           # Stores historical summaries (generated at runtime)
+🔹 .env                  # Environment variables (not included in repo)
+🔹 README.md             # Project documentation
+```
+
+---
+
+## Installation
+
+###  Prerequisites
+
+* Python 3.8 or higher
+* A Google Gemini API key
+* A SerpAPI key
+
+###  Steps
+
+#### 1. Clone the Repository
+
+```bash
 git clone https://github.com/majinchandu/AgenticAI_Search_Summarizer
 cd agentic-ai-assistant
+```
 
+#### 2. Set Up a Virtual Environment
 
-Set Up a Virtual Environment
+```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
+#### 3. Install Dependencies
 
-Install Dependencies
+```bash
 pip install streamlit google-generativeai python-dotenv reportlab requests
+```
 
+#### 4. Configure Environment Variables
 
-Configure Environment Variables
-Create a .env file in the project root and add your API keys:
+Create a `.env` file in the project root and add your API keys:
+
+```env
 GEMINI_API_KEY=your_gemini_api_key
 SERPAPI_API_KEY=your_serpapi_api_key
+```
 
+---
 
-Run the Application
+## Run the Application
 
-For the CLI:
+### CLI:
+
+```bash
 python main.py
+```
 
+### Streamlit UI:
 
-For the Streamlit UI:
+```bash
 streamlit run app.py
+```
 
+---
 
+## Usage
 
+### Command-Line Interface (`main.py`)
 
+* Run `python main.py`
+* Enter a topic (e.g., `Machine Learning Trends`)
+* The agent will:
 
-Usage
-Command-Line Interface (main.py)
+  * Plan the workflow
+  * Execute tools
+  * Display observations
+  * Save summary to `memory.json`
+  * Generate PDF if applicable
 
-Run python main.py.
-Enter a topic when prompted (e.g., "Machine Learning Trends").
-The agent will:
-Plan the workflow (e.g., search, summarize, save to PDF).
-Execute tools and display observations.
-Save the final summary to memory.json and generate a PDF if applicable.
+---
 
+### Streamlit Interface (`app.py`)
 
+* Run `streamlit run app.py`
+* Open the URL in your browser (`http://localhost:8501`)
+* Enter a topic (e.g., `Quantum Computing`)
+* Click `Run Agent`
+* View real-time logs and final summary
+* Output saved to PDF and memory
 
-Streamlit Interface (app.py)
+---
 
-Run streamlit run app.py.
-Open the provided URL in your browser (typically http://localhost:8501).
-Enter a topic in the text input field (e.g., "Quantum Computing").
-Click "Run Agent" to start the process.
-View real-time updates, including tool actions, observations, and the final summary.
-A PDF report is saved, and the summary is stored in memory.json.
+##  Tools
 
-Tools
+* **Search**: Uses SerpAPI for real-time web data
+* **Summarize**: Uses Gemini for intelligent summarization
+* **PDF**: Exports summary as `gemini_summary.pdf`
+* **Memory**: Tracks history in `memory.json`
 
-Search: Queries the web using SerpAPI and returns formatted results.
-Summarize: Uses the Gemini model to generate concise summaries.
-PDF: Saves summaries as PDF reports using ReportLab.
-Memory: Displays or saves topic summaries with timestamps.
+---
 
-Example Workflow
-For the topic "Artificial Intelligence Ethics":
+##  Example Workflow
 
-The agent runs a web search to gather data.
-It summarizes the search results into a concise text.
-The summary is saved as a PDF (gemini_summary.pdf).
-The summary is stored in memory.json with a timestamp.
+For topic `Artificial Intelligence Ethics`:
 
-Memory Management
-Summaries are saved in memory.json with the format:
+1. Agent performs web search
+2. Summarizes key content
+3. Saves to `gemini_summary.pdf`
+4. Logs to `memory.json`
+
+---
+
+##  Memory Management
+
+Summaries are saved like:
+
+```json
 [
   {
     "topic": "Artificial Intelligence Ethics",
@@ -112,36 +164,56 @@ Summaries are saved in memory.json with the format:
     "timestamp": "2025-06-24 12:03:00"
   }
 ]
+```
 
-Use the memory tool to view past topics and their summaries.
-PDF Reports
+View or reuse past summaries via the memory tool.
 
-Generated PDFs include a title (e.g., "Summary Report: Artificial Intelligence Ethics") and the summary text.
-Files are saved as gemini_summary.pdf in the project root.
+---
 
-Limitations
+##  PDF Reports
 
-Requires stable internet for web searches and API calls.
-API keys must be valid and have sufficient quota.
-PDF generation is basic and may not handle complex formatting.
-Memory is stored locally in memory.json without persistence across environments.
+* Title: `Summary Report: <Topic>`
+* Output file: `gemini_summary.pdf`
+* Location: Project root
 
-Contributing
+---
 
-Fork the repository.
-Create a feature branch (git checkout -b feature/your-feature).
-Commit changes (git commit -m "Add your feature").
-Push to the branch (git push origin feature/your-feature).
-Open a pull request.
+##  Limitations
 
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
-Acknowledgments
+* Requires active internet connection
+* Valid API keys and sufficient quota required
+* Basic PDF formatting
+* Local memory only (no cloud persistence)
 
-Powered by Google Gemini for summarization.
-Uses SerpAPI for web search.
-Built with Streamlit for the web interface.
-PDF generation by ReportLab.
+---
 
-Contact
-For issues or questions, please open an issue on the GitHub repository or contact the maintainer at your-email@example.com.
+##  Contributing
+
+1. Fork the repo
+2. Create a branch: `git checkout -b feature/your-feature`
+3. Commit: `git commit -m "Add your feature"`
+4. Push: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+---
+
+##  License
+
+This project is licensed under the **MIT License**.
+See the `LICENSE` file for more information.
+
+---
+
+##  Acknowledgments
+
+* **Google Gemini API** – Summarization engine
+* **SerpAPI** – Web search tool
+* **Streamlit** – Frontend framework
+* **ReportLab** – PDF generation
+
+---
+
+##  Contact
+
+For issues or questions, open a GitHub issue or email:
+**[chanderveersinghchauhan08@gmail.com](mailto:chanderveersinghchauhan08@gmail.com)**
