@@ -35,7 +35,7 @@ A SerpAPI key (for web search)
 Steps
 
 Clone the Repository
-git clone https://github.com/your-username/agentic-ai-assistant.git
+git clone https://github.com/majinchandu/AgenticAI_Search_Summarizer
 cd agentic-ai-assistant
 
 
